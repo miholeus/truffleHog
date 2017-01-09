@@ -61,6 +61,10 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+def decode_string(str):
+    return unicode(str, errors='ignore')
+
+
 def find_strings(git_url):
     project_path = tempfile.mkdtemp()
 
@@ -92,11 +96,12 @@ def find_strings(git_url):
                 diff = prev_commit.diff(curr_commit, create_patch=True)
                 for blob in diff:
                     #print i.a_blob.data_stream.read()
-                    printableDiff = blob.diff.decode()
+                    #printableDiff = blob.diff.decode("utf-8")
+                    printableDiff = decode_string(blob.diff)
                     if printableDiff.startswith("Binary files"):
                         continue
                     foundSomething = False
-                    lines = blob.diff.decode().split("\n")
+                    lines = decode_string(blob.diff).split("\n")
                     for line in lines:
                         for word in line.split():
                             base64_strings = get_strings_of_set(word, BASE64_CHARS)
